@@ -84,6 +84,16 @@ function createMiddleware(options = {}) {
         );
       }
 
+      // We can now dispatch the request FSA
+      if (
+        typeof requestType.payload === 'function' ||
+        typeof requestType.meta === 'function'
+      ) {
+        next(await actionWith(requestType, [action, getState()]));
+      } else {
+        next(requestType);
+      }
+
       // Process [RSAA].endpoint function
       if (typeof endpoint === 'function') {
         try {
@@ -154,16 +164,6 @@ function createMiddleware(options = {}) {
             )
           );
         }
-      }
-
-      // We can now dispatch the request FSA
-      if (
-        typeof requestType.payload === 'function' ||
-        typeof requestType.meta === 'function'
-      ) {
-        next(await actionWith(requestType, [action, getState()]));
-      } else {
-        next(requestType);
       }
 
       let res;
